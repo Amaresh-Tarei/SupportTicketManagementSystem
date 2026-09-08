@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technical Engineering Report - Support Ticket Management System</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+    @bottom-right {
+      content: counter(page);
+    }
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #1e293b;
+    background-color: #ffffff;
+    line-height: 1.55;
+    font-size: 10pt;
+    margin: 0;
+    padding: 0;
+  }
+
+  .cover-banner {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0369a1 100%);
+    color: #ffffff;
+    padding: 32px 28px;
+    border-radius: 10px;
+    margin-bottom: 28px;
+  }
+
+  .cover-banner h1 {
+    margin: 0 0 8px 0;
+    font-size: 22pt;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #f8fafc;
+  }
+
+  .cover-banner .subtitle {
+    font-size: 12pt;
+    color: #93c5fd;
+    margin-bottom: 18px;
+    font-weight: 500;
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px 24px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 9pt;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .meta-label {
+    color: #cbd5e1;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 7.5pt;
+    letter-spacing: 0.05em;
+  }
+
+  .meta-value {
+    color: #ffffff;
+    font-weight: 500;
+  }
+
+  .meta-value a {
+    color: #38bdf8;
+    text-decoration: none;
+  }
+
+  h2 {
+    font-size: 13pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin-top: 24px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  h2 .section-num {
+    background: #0284c7;
+    color: #ffffff;
+    font-size: 9pt;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  h3 {
+    font-size: 11pt;
+    font-weight: 600;
+    color: #1e293b;
+    margin-top: 14px;
+    margin-bottom: 6px;
+  }
+
+  p {
+    margin: 0 0 10px 0;
+    color: #334155;
+  }
+
+  ul, ol {
+    margin: 0 0 12px 0;
+    padding-left: 20px;
+    color: #334155;
+  }
+
+  li {
+    margin-bottom: 4px;
+  }
+
+  .card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .stat-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-size: 14pt;
+    font-weight: 700;
+    color: #0284c7;
+    margin-bottom: 2px;
+  }
+
+  .stat-lbl {
+    font-size: 7.5pt;
+    color: #64748b;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 14px;
+    font-size: 8.5pt;
+  }
+
+  th, td {
+    padding: 7px 10px;
+    border: 1px solid #cbd5e1;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background-color: #0f172a;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 8pt;
+    letter-spacing: 0.03em;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f8fafc;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 9999px;
+    font-size: 7pt;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .badge-get { background: #e0f2fe; color: #0369a1; }
+  .badge-post { background: #dcfce7; color: #15803d; }
+  .badge-put { background: #fef3c7; color: #b45309; }
+  .badge-patch { background: #fae8ff; color: #86198f; }
+  .badge-delete { background: #fee2e2; color: #b91c1c; }
+
+  .badge-pass { background: #dcfce7; color: #15803d; font-weight: 700; }
+
+  code {
+    font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+    font-size: 8.5pt;
+    background: #f1f5f9;
+    color: #0f172a;
+    padding: 1px 4px;
+    border-radius: 4px;
+  }
+
+  pre {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 12px 14px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 8pt;
+    line-height: 1.45;
+    margin: 8px 0 12px 0;
+    font-family: "Cascadia Code", Consolas, monospace;
+  }
+
+  pre .kw { color: #38bdf8; font-weight: bold; }
+  pre .str { color: #86efac; }
+  pre .typ { color: #fcd34d; }
+  pre .com { color: #94a3b8; font-style: italic; }
+
+  .page-break {
+    page-break-before: always;
+  }
+
+  .rule-box {
+    border-left: 3px solid #0284c7;
+    background: #f0f9ff;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .rule-title {
+    font-weight: 700;
+    color: #0369a1;
+    font-size: 9pt;
+    margin-bottom: 2px;
+  }
+
+  .rule-desc {
+    font-size: 8.5pt;
+    color: #334155;
+    margin: 0;
+  }
+
+  .footer-note {
+    margin-top: 24px;
+    padding-top: 10px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 8pt;
+    color: #64748b;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+  <!-- COVER / HEADER -->
+  <div class="cover-banner">
+    <h1>Support Ticket Management System</h1>
+    <div class="subtitle">Full-Stack Technical Architecture, Implementation & Verification Report</div>
+    
+    <div class="meta-grid">
+      <div class="meta-item">
+        <span class="meta-label">Author / Engineer:</span>
+        <span class="meta-value">Amaresh Tarei</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">GitHub Repository:</span>
+        <span class="meta-value"><a href="https://github.com/Amaresh-Tarei/SupportTicketManagementSystem">github.com/Amaresh-Tarei/SupportTicketManagementSystem</a></span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Live Public Deployment:</span>
+        <span class="meta-value"><a href="https://battery-albert-java-power.trycloudflare.com">https://battery-albert-java-power.trycloudflare.com</a></span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Target Stack:</span>
+        <span class="meta-value">ASP.NET Core 8 Web API &bull; React 18 &bull; TypeScript &bull; EF Core</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXECUTIVE SUMMARY -->
+  <h2><span class="section-num">1</span> Executive Summary & System Overview</h2>
+  <p>
+    The <strong>Support Ticket Management System</strong> is an enterprise-grade full-stack operational tracking platform developed to manage incident lifecycles, enforce compliance with operational business logic, maintain an immutable audit trail of ticket status transitions, and facilitate team collaboration via chronological threaded comments.
+  </p>
+  <div class="grid-3">
+    <div class="stat-card">
+      <div class="stat-val">100%</div>
+      <div class="stat-lbl">Test Pass Rate (11/11 xUnit)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">7 / 7</div>
+      <div class="stat-lbl">Business Rules Enforced</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">Live & SSL</div>
+      <div class="stat-lbl">Publicly Accessible URL</div>
+    </div>
+  </div>
+  <p>
+    The system satisfies demanding enterprise requirements: atomic database operations, strict status transition validation, automated timestamp management, centralized exception handling with RFC 7807 problem details, and a responsive modern Single-Page Application (SPA) user interface.
+  </p>
+
+  <!-- ARCHITECTURAL BLUEPRINT -->
+  <h2><span class="section-num">2</span> Architecture & Technology Stack</h2>
+  <div class="card">
+    <p style="font-weight: 600; margin-bottom: 6px; color: #0f172a;">High-Level Architectural Workflow:</p>
+    <pre style="background:#0f172a; color:#f8fafc; margin:0; padding: 10px;">
+[ End User / Browser ]
+         │ (HTTPS Request)
+         ▼
+[ Cloudflare Edge / Public Tunnel ]
+         │ (Reverse Proxy)
+         ▼
+[ Frontend: React 18 + TypeScript + Vite (Port 5173) ]
+         │ (/api Reverse Proxy / CORS)
+         ▼
+[ Backend: ASP.NET Core 8.0 Web API (Ports 5000 / 5049) ]
+   ├── Centralized Exception Middleware (RFC 7807)
+   ├── RESTful Controllers (Tickets, Comments, Dashboard)
+   ├── Service Layer (ITicketService, ICommentService, IDashboardService)
+   └── Data Access: EF Core 8.0 DbContext
+         │
+         ▼
+[ Database: Microsoft SQL Server / LocalDB (SupportTicketDb) ]
+    </pre>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3 style="margin-top:0;">Backend Stack</h3>
+      <ul>
+        <li><strong>Framework:</strong> .NET 8.0 SDK (C# 12)</li>
+        <li><strong>API Pipeline:</strong> ASP.NET Core Web API with Controller routing</li>
+        <li><strong>ORM:</strong> Entity Framework Core 8.0 (Code-First Migrations)</li>
+        <li><strong>Documentation:</strong> Swagger / OpenAPI 3.0</li>
+        <li><strong>Testing:</strong> xUnit with <code>Microsoft.EntityFrameworkCore.InMemory</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;">Frontend Stack</h3>
+      <ul>
+        <li><strong>Core:</strong> React 18.3 &bull; TypeScript 5.6 &bull; Vite 6.4</li>
+        <li><strong>Routing:</strong> Custom Hash Navigation Hook (Zero-dependency)</li>
+        <li><strong>Icons:</strong> Lucide React (Clean vector iconography)</li>
+        <li><strong>Styling:</strong> CSS Variables & Responsive Design System</li>
+        <li><strong>HTTP:</strong> Fetch Client with Typed Error Handling & Proxy</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PAGE BREAK -->
+  <div class="page-break"></div>
+
+  <!-- BUSINESS RULES -->
+  <h2><span class="section-num">3</span> Core Domain Logic & Business Rules Implementation</h2>
+  <p>
+    All business rules are enforced at the service layer to ensure data integrity regardless of whether requests originate from the Web UI, API tests, or external integrations:
+  </p>
+
+  <div class="rule-box">
+    <div class="rule-title">Rule 1: Closed Tickets Are Immutable</div>
+    <p class="rule-desc">Once a ticket reaches <code>Closed</code> status, neither its metadata (Title, Description, Priority, Assignee, DueDate) nor its status can be modified. Attempts return HTTP 400 Bad Request with a clear validation message.</p>
+  </div>
+
+  <div class="rule-box">
+    <div class="rule-title">Rule 2: Critical Priority Requires Due Date</div>
+    <p class="rule-desc">Creating or updating a ticket with <code>Priority == Critical</code> mandates a non-null <code>DueDate</code>. Submitting without a due date throws a <code>BusinessRuleException</code>.</p>
+  </div>
+
+  <div class="rule-box">
+    <div class="rule-title">Rule 3: Due Date Cannot Precede Creation Date</div>
+    <p class="rule-desc">During ticket creation, <code>DueDate</code> cannot be in the past (before UTC today). During updates, <code>DueDate</code> cannot precede the ticket's original <code>CreatedDate</code>.</p>
+  </div>
+
+  <div class="rule-box">
+    <div class="rule-title">Rule 4: Disallow Direct Transition from Open to Closed</div>
+    <p class="rule-desc">Tickets cannot leap directly from <code>Open</code> to <code>Closed</code> without active handling. A ticket must first transition through <code>InProgress</code> or <code>Resolved</code> before closure.</p>
+  </div>
+
+  <div class="rule-box">
+    <div class="rule-title">Rule 5: Automatic ResolvedDate Stamping</div>
+    <p class="rule-desc">When a ticket status transitions to <code>Resolved</code>, the system automatically stamps <code>ResolvedDate</code> with the exact UTC timestamp.</p>
+  </div>
+
+  <div class="rule-box">
+    <div class="rule-title">Rule 6: Reopening Resets ResolvedDate</div>
+    <p class="rule-desc">If an issue recurrence forces a ticket from <code>Resolved</code> back to <code>Open</code> or <code>InProgress</code>, <code>ResolvedDate</code> is automatically reset to <code>null</code>.</p>
+  </div>
+
+  <div class="rule-box">
+    <div class="rule-title">Rule 7: Immutable Audit Trail of Status History</div>
+    <p class="rule-desc">Every status change generates a persistent record in <code>TicketStatusHistories</code> capturing <code>OldStatus</code>, <code>NewStatus</code>, <code>ChangedDate</code>, and <code>ChangedBy</code>.</p>
+  </div>
+
+  <!-- DATABASE DESIGN -->
+  <h2><span class="section-num">4</span> Database Design & Schema</h2>
+  <p>The schema is normalized, indexed for search, and linked with cascade constraints:</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Table</th>
+        <th>Primary Key</th>
+        <th>Foreign Keys</th>
+        <th>Key Columns & Constraints</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Tickets</strong></td>
+        <td><code>Id (INT IDENTITY)</code></td>
+        <td>None</td>
+        <td><code>TicketNumber (Unique, NVARCHAR(50))</code>, <code>Title (150)</code>, <code>Status (Enum)</code>, <code>Priority (Enum)</code>, <code>CreatedDate</code>, <code>DueDate</code>, <code>ResolvedDate</code></td>
+      </tr>
+      <tr>
+        <td><strong>TicketComments</strong></td>
+        <td><code>Id (INT IDENTITY)</code></td>
+        <td><code>TicketId &rarr; Tickets.Id</code></td>
+        <td><code>CommentText (NVARCHAR(1000))</code>, <code>CreatedBy (100)</code>, <code>CreatedDate (UTC)</code> (Cascade on Delete)</td>
+      </tr>
+      <tr>
+        <td><strong>TicketStatusHistories</strong></td>
+        <td><code>Id (INT IDENTITY)</code></td>
+        <td><code>TicketId &rarr; Tickets.Id</code></td>
+        <td><code>OldStatus (Enum)</code>, <code>NewStatus (Enum)</code>, <code>ChangedDate (UTC)</code>, <code>ChangedBy (100)</code> (Cascade on Delete)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- API ENDPOINTS TABLE -->
+  <h2><span class="section-num">5</span> RESTful API Specifications</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Method</th>
+        <th>Endpoint</th>
+        <th>Purpose</th>
+        <th>Status Codes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="badge badge-get">GET</span></td>
+        <td><code>/api/dashboard/summary</code></td>
+        <td>Aggregated operational metrics (Total, Open, InProgress, Resolved, Closed, Critical, Overdue)</td>
+        <td>200 OK</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-get">GET</span></td>
+        <td><code>/api/tickets</code></td>
+        <td>Paginated ticket list with search, status/priority filters, date ranges, and sorting</td>
+        <td>200 OK</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-get">GET</span></td>
+        <td><code>/api/tickets/{id}</code></td>
+        <td>Retrieve ticket by primary key with comment count</td>
+        <td>200 OK, 404 Not Found</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-post">POST</span></td>
+        <td><code>/api/tickets</code></td>
+        <td>Create a new ticket with automatic ticket number generation (<code>TKT-XXXX</code>)</td>
+        <td>201 Created, 400 Bad Request</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-put">PUT</span></td>
+        <td><code>/api/tickets/{id}</code></td>
+        <td>Update existing ticket fields (validating closed status & critical due dates)</td>
+        <td>200 OK, 400 Bad Request, 404</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-patch">PATCH</span></td>
+        <td><code>/api/tickets/{id}/status</code></td>
+        <td>Execute status transition and record audit history entry</td>
+        <td>200 OK, 400 Bad Request, 404</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-delete">DELETE</span></td>
+        <td><code>/api/tickets/{id}</code></td>
+        <td>Remove ticket and cascade delete comments and history</td>
+        <td>204 No Content, 404</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-get">GET</span></td>
+        <td><code>/api/tickets/{id}/comments</code></td>
+        <td>Retrieve chronological comments for a ticket</td>
+        <td>200 OK, 404 Not Found</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-post">POST</span></td>
+        <td><code>/api/tickets/{id}/comments</code></td>
+        <td>Add a new comment authored by team member</td>
+        <td>201 Created, 400, 404</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-get">GET</span></td>
+        <td><code>/api/tickets/{id}/status-history</code></td>
+        <td>Retrieve complete immutable audit trail of status transitions</td>
+        <td>200 OK, 404 Not Found</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- PAGE BREAK -->
+  <div class="page-break"></div>
+
+  <!-- TESTING & VERIFICATION -->
+  <h2><span class="section-num">6</span> Automated Testing & Quality Assurance</h2>
+  <p>
+    The backend contains a dedicated xUnit test suite (<code>SupportTicketManagementSystem.Tests</code>) utilizing EF Core In-Memory database fixtures. Each unit test operates on an isolated database context:
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>Test Case Name</th>
+        <th>Target Rule</th>
+        <th>Assertion & Expected Outcome</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>UpdateTicket_WhenTicketIsClosed</code></td>
+        <td>Rule 1</td>
+        <td>Throws <code>BusinessRuleException</code>: "A Closed ticket cannot be edited."</td>
+        <td><span class="badge badge-pass">PASSED</span></td>
+      </tr>
+      <tr>
+        <td><code>ChangeStatus_WhenTicketIsClosed</code></td>
+        <td>Rule 1</td>
+        <td>Throws <code>BusinessRuleException</code>: "A Closed ticket cannot be edited."</td>
+        <td><span class="badge badge-pass">PASSED</span></td>
+      </tr>
+      <tr>
+        <td><code>CreateTicket_CriticalWithoutDueDate</code></td>
+        <td>Rule 2</td>
+        <td>Throws <code>BusinessRuleException</code>: "Critical priority tickets must include a due date."</td>
+        <td><span class="badge badge-pass">PASSED</span></td>
+      </tr>
+      <tr>
+        <td><code>UpdateTicket_CriticalWithoutDueDate</code></td>
+        <td>Rule 2</td>
+        <td>Throws <code>BusinessRuleException</code>: "Critical priority tickets must include a due date."</td>
+        <td><span class="badge badge-pass">PASSED</span></td>
+      </tr>
+      <tr>
+        <td><code>CreateTicket_DueDateInPast</code></td>
+        <td>Rule 3</td>
+        <td>Throws <code>BusinessRuleException</code>: "Due date cannot be earlier than the current date."</td>
+        <td><span class="badge badge-pass">PASSED</span></td>
+      </tr>
+      <tr>
+        <td><code>UpdateTicket_DueDateBeforeCreatedDate</code></td>
+        <td>Rule 3</td>
+        <td>Throws <code>BusinessRuleException</code>: "Due date cannot be earlier than creation date."</td>
+        <td><span class="badge badge-pass">PASSED</span></td>
+      </tr>
+      <tr>
+        <td><code>ChangeStatus_OpenToClosedDirectly</code></td>
+        <td>Rule 4</td>
+        <td>Throws <code>BusinessRuleException</code>: "Tickets cannot be closed directly from Open status."</td>
+        <td><span class="badge badge-pass">PASSED</span></td>
+      </tr>
+      <tr>
+        <td><code>ChangeStatus_ToResolved_SetsResolvedDate</code></td>
+        <td>Rule 5</td>
+        <td>Verifies <code>ResolvedDate != null</code> and is set to current UTC time.</td>
+        <td><span class="badge badge-pass">PASSED</span></td>
+      </tr>
+      <tr>
+        <td><code>ChangeStatus_ResolvedToInProgress_ClearsResolvedDate</code></td>
+        <td>Rule 6</td>
+        <td>Verifies <code>ResolvedDate == null</code> upon moving backward.</td>
+        <td><span class="badge badge-pass">PASSED</span></td>
+      </tr>
+      <tr>
+        <td><code>ChangeStatus_LogsStatusHistory</code></td>
+        <td>Rule 7</td>
+        <td>Verifies audit trail row inserted with correct old & new statuses.</td>
+        <td><span class="badge badge-pass">PASSED</span></td>
+      </tr>
+      <tr>
+        <td><code>AddComment_ToExistingTicket_SavesComment</code></td>
+        <td>Comments</td>
+        <td>Verifies comment persisted and chronological ordering maintained.</td>
+        <td><span class="badge badge-pass">PASSED</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- FRONTEND IMPLEMENTATION -->
+  <h2><span class="section-num">7</span> Frontend Engineering & User Experience</h2>
+  <div class="card">
+    <p>The frontend architecture adheres to Clean UI principles, emphasizing accessibility and performance:</p>
+    <ul>
+      <li><strong>Atomic UI Components:</strong> Reusable badges (<code>StatusBadge</code>, <code>PriorityBadge</code>), loading indicators, modal dialogs (<code>ConfirmModal</code>, <code>StatusChangeModal</code>), and alert banners.</li>
+      <li><strong>Dynamic Filtering & Pagination:</strong> Real-time search debouncing, multi-criteria filter controls, and client-side pagination synchronized with backend query parameters.</li>
+      <li><strong>Audit History Timeline:</strong> Visual timeline component tracing every historical status change with user attribution and relative timestamps.</li>
+      <li><strong>Robust Error Feedback:</strong> Form field validation errors and server-side business rule exceptions are captured and displayed in contextual banner notifications.</li>
+    </ul>
+  </div>
+
+  <!-- DEPLOYMENT & HOW TO RUN -->
+  <h2><span class="section-num">8</span> Deployment, Version Control & Verification Guide</h2>
+  <div class="card">
+    <h3 style="margin-top:0;">Accessing the Live Application</h3>
+    <p>The application is accessible globally with full end-to-end functionality via the secure Cloudflare tunnel:</p>
+    <ul>
+      <li><strong>Public Web Application:</strong> <a href="https://battery-albert-java-power.trycloudflare.com">https://battery-albert-java-power.trycloudflare.com</a></li>
+      <li><strong>GitHub Source Code:</strong> <a href="https://github.com/Amaresh-Tarei/SupportTicketManagementSystem">https://github.com/Amaresh-Tarei/SupportTicketManagementSystem</a></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0;">How to Run Locally from Scratch</h3>
+    <ol>
+      <li><strong>Clone Repository:</strong>
+        <pre style="margin: 4px 0 8px 0;">git clone https://github.com/Amaresh-Tarei/SupportTicketManagementSystem.git</pre>
+      </li>
+      <li><strong>Backend Startup:</strong>
+        <pre style="margin: 4px 0 8px 0;">dotnet run --project backend/SupportTicketManagementSystem.API/SupportTicketManagementSystem.API.csproj --urls "http://localhost:5000"</pre>
+      </li>
+      <li><strong>Frontend Startup:</strong>
+        <pre style="margin: 4px 0 8px 0;">cd frontend && npm install && npm run dev</pre>
+      </li>
+      <li><strong>Run Automated Tests:</strong>
+        <pre style="margin: 4px 0 8px 0;">dotnet test backend/SupportTicketManagementSystem.Tests/SupportTicketManagementSystem.Tests.csproj</pre>
+      </li>
+    </ol>
+  </div>
+
+  <div class="footer-note">
+    <span>Support Ticket Management System &bull; Technical Architecture Report</span>
+    <span>Prepared for Interview Evaluation &bull; Amaresh Tarei</span>
+  </div>
+
+</body>
+</html>
