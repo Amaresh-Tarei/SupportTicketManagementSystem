@@ -1,0 +1,41 @@
+# .NET Core & Visual Studio
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+*.lock.json
+project.lock.json
+*.nuget.props
+*.nuget.targets
+
+# Node & Frontend
+node_modules/
+dist/
+build/
+.npm
+*.log
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database
+*.mdf
+*.ldf
+*.ndf
+
+# Operating System
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# IDEs & Editors
+.vscode/
+.idea/
+*.swp
+*~
